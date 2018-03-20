@@ -80,6 +80,7 @@
                     trigger: 'item',
                     formatter: function(params) {
                         return "City" + ' : ' + params.data.name +
+                            '<br/>' + "Country: " + params.data.value[2][0].country +
                             '<br/>' + "Local Date: " + params.data.value[2][0].date +
                             '<br/>' + "Exact Local Time: " + params.data.value[2][0].time +
                             '<br/>' + "Brightness: " + params.data.value[2][0].brightness +
