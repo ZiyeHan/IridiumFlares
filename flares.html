@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html style="height: 100%">
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div id="container" style="height: 100%"></div>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
+    <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.js"></script>
+
+    <script type="text/javascript">
+        //Vriables declaration
+        var dom = document.getElementById("container");
+        var myChart = echarts.init(dom);
+        
+        option = null;
+        var base = +new Date(2018, 2, 6); //Better start from 0h
+        var oneHour = 3600 * 100;
+        var date = [];
+        var dayNightLineData = [1];
+        var now = new Date(base);
+        for (var i = 0; i <= 7 * 240; i++) {
+            date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/') + " " + [now.getHours(), now.getMinutes()].join(':'));
+            dayNightLineData.push(1 + 0.95 * Math.sin((i + 1) * Math.PI / 120));
+            var now = new Date(base += oneHour);
+        }
+
+        jQuery.get("iridiumFlaresInfo.csv", function(data) {
+            var dataObjects = $.csv.toObjects(data);
+            
+            //Transfer data to map data (all data processing is here)
+            function generateMapData(dataObjects) {
+                var mapData = [];
+                for (var i = 0; i < dataObjects.length; i++) {
+                    var extendValues = [];
+                    extendValues.push({
+                        date: dataObjects[i].date,
+                        time: dataObjects[i].time,
+                        brightness: dataObjects[i].brightness,
+                        altitude: dataObjects[i].altitude,
+                        azimuth: dataObjects[i].azimuth,
+                        satellite: dataObjects[i].satellite,
+                        country: dataObjects[i].country,
+                        city: dataObjects[i].city
+                    });
+                    var valueArray = [];
+                    valueArray.push(dataObjects[i].longitude, dataObjects[i].latitude, extendValues);
+                    mapData.push({
+                        name: dataObjects[i].city,
+                        value: valueArray
+                    });
+                }
+                return mapData;
+            };
+            
+            option = {
+                //Background Color
+                backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [{
+                    offset: 0,
+                    color: '#3f3f3f'
+                }]),
+
+                //Text title above
+                title: {
+                    text: 'Map of Iridium Flares',
+                    left: 'center',
+                    top: 10,
+                    itemGap: 10,
+                    textStyle: {
+                        color: '#eee'
+                    }
+                },
+
+                //Design the tooltip content
+                tooltip: {
+                    trigger: 'item',
+                    formatter: function(params) {
+                        return "City" + ' : ' + params.data.name +
+                            '<br/>' + "Local date: " + params.data.value[2][0].date +
+                            '<br/>' + "Local time: " + params.data.value[2][0].time +
+                            '<br/>' + "Brightness: " + params.data.value[2][0].brightness +
+                            '<br/>' + "Satellite Name: " + params.data.value[2][0].satellite +
+                            '<br/>' + "Azimuth: " + params.data.value[2][0].azimuth;
+                    }
+                },
+
+                //The world map
+                geo: {
+                    map: 'world',
+                    silent: false,
+                    label: {
+                        emphasis: {
+                            show: true,
+                            areaColor: '#000'
+                        }
+                    },
+                    itemStyle: {
+                        normal: {
+                            borderWidth: 0.2,
+                            areaColor: '#bfbfbf',
+                            borderColor: '#000'
+                        }
+                    },
+                    left: '7%',
+                    top: '10%',
+                    bottom: '15%',
+                    right: '7%',
+                    roam: false
+                },
+
+                //Show dates at the bottom above the slider bar
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: date,
+                    axisLabel: {
+                        show: true,
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    },
+                },
+
+                //Not useful
+                yAxis: {
+                    show: false,
+                    type: 'value',
+                    min: 0,
+                    max: 2,
+                },
+
+                //Design the "slider bar" at the bottom
+                dataZoom: [{
+                    type: 'slider', //The length of the bar is one-day
+                    minSpan: 100 / 21,
+                    maxSpan: 100 / 21,
+                    start: 0,
+                    end: 100 / 21
+                }, {
+                    start: 0,
+                    end: 100 / 7,
+                    handleSize: '80%',
+                    handleStyle: {
+                        color: '#fff',
+                        shadowBlur: 3,
+                        shadowColor: '#fff',
+                        shadowOffsetX: 2,
+                        shadowOffsetY: 2
+                    }
+                }],
+
+                //Scatter Points and Day-Night Line
+                series: [
+                    //Scatter Points
+                    {
+                        name: 'cityDots',
+                        type: 'scatter',
+                        coordinateSystem: 'geo',
+                        data: generateMapData(dataObjects),
+                        activeOpacity: 1,
+                        label: {
+                            normal: {
+                                formatter: '{b}',
+                                position: 'right',
+                                show: false
+                            },
+                            emphasis: {
+                                show: false
+                            }
+                        },
+                        symbolSize: 10,
+                        itemStyle: {
+                            normal: {
+                                borderColor: '#21160b',
+                                color: '#271660',
+                            }
+                        }
+                    },
+
+                    //Day-Night Line
+                    {
+                        name: 'dayNightLines',
+                        type: 'line',
+                        symbol: 'none',
+                        sampling: 'average',
+                        itemStyle: {
+                            normal: {
+                                color: '#3f3f3f'
+                            }
+                        },
+                        areaStyle: {
+                            normal: {
+                                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                                    offset: 0,
+                                    color: '#3f3f3f'
+                                }, {
+                                    offset: 1,
+                                    color: '#3f3f3f'
+                                }])
+                            }
+                        },
+                        data: dayNightLineData
+                    }
+                ]
+            };
+
+            if (option && typeof option === "object") {
+                myChart.setOption(option, true);
+            }
+
+            //Rerender 
+            myChart.on('dataZoom', function(params) {
+                reRender(params);
+            });
+
+            function reRender(params) {
+                var startSecond = Date.parse('06 Mar 2018 00:00:00 GMT') / 1000; //GMT
+                var totalSeconds = 7 * 24 * 60 * 60;
+                var beginSecondsStr = (params.start / 100 * totalSeconds + startSecond) + ""; //GMT
+                var beginSeconds = beginSecondsStr.substring(0, beginSecondsStr.indexOf("."));
+                var endSecondsStr = (params.end / 100 * totalSeconds + startSecond) + ""; //GMT
+                var endSeconds = endSecondsStr.substring(0, endSecondsStr.indexOf("."));
+                var blinkingDataObjects = []; 
+                for (var i = 0; i < dataObjects.length; i++) {
+                    var flareDate = dataObjects[i].date;
+                    var flareTime = dataObjects[i].time;
+                    var flareDateDay = flareDate.substring(flareDate.indexOf(" ") + 1, flareDate.length);
+                    var flareDateMonth = flareDate.substring(0, flareDate.indexOf(" "));
+                    var flareTimesString = flareDateDay + " " + flareDateMonth + " 2018 " +
+                        flareTime + " GMT";
+                    var flareTimeSecond = Date.parse(flareTimesString) / 1000; //GMT
+                    if ((flareTimeSecond > beginSeconds) && (flareTimeSecond < endSeconds)) {
+                        blinkingDataObjects.push(dataObjects[i]);
+                    }
+                }
+                
+                //Option is global
+                if(option.series.length > 2){
+                    option.series.pop(); //Pop the last effectScatter
+                }
+                option.series.push({
+                    name: 'blinkCities',
+                    type: 'effectScatter',
+                    coordinateSystem: 'geo',
+                    data: generateMapData(blinkingDataObjects),
+                    showEffectOn: 'render',
+                    hoverAnimation: true,
+                    itemStyle: {
+                        normal: {
+                            color: '#f4e925',
+                            shadowBlur: 10,
+                            shadowColor: '#333'
+                        }
+                    },
+                    zlevel: 1
+                });
+                
+                option.dataZoom[0].start = params.start;
+                option.dataZoom[0].end = params.end;
+                option.dataZoom[1].start = params.start;
+                option.dataZoom[1].end = params.end;
+                
+                         
+                myChart.setOption(option, true);
+            }
+
+        });
+
+    </script>
+</body>
+
+</html>
