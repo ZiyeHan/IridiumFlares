@@ -59,15 +59,36 @@ public class CityLatLongCrawler {
 
             String cityLatitudeDegree = cityLocation.findElement(By.xpath(".//td[2]")).getText();
             String cityLatitudeDecimal = cityLocation.findElement(By.xpath(".//td[3]")).getText();
+
+            boolean isS = false;
+            if(cityLatitudeDecimal.contains("S")){
+                isS = true;
+            }
+
             cityLatitudeDecimal = cityLatitudeDecimal.substring(0, cityLatitudeDecimal.indexOf(' '));
             double cityLatitude = Double.valueOf(cityLatitudeDegree) + Double.valueOf(cityLatitudeDecimal) / 60.0;
-            cityLatitude = Math.round(cityLatitude * 100.0) / 100.0;
+            if(isS){
+                cityLatitude = - Math.round(cityLatitude * 100.0) / 100.0;
+            }else{
+                cityLatitude = Math.round(cityLatitude * 100.0) / 100.0;
+            }
 
             String cityLongitudeDegree = cityLocation.findElement(By.xpath(".//td[4]")).getText();
             String cityLongitudeDecimal = cityLocation.findElement(By.xpath(".//td[5]")).getText();
+
+            boolean isW = false;
+            if(cityLongitudeDecimal.contains("W")){
+                isW = true;
+            }
+
             cityLongitudeDecimal = cityLongitudeDecimal.substring(0, cityLongitudeDecimal.indexOf(' '));
             double cityLongitude = Double.valueOf(cityLongitudeDegree) + Double.valueOf(cityLongitudeDecimal) / 60.0;
-            cityLongitude = Math.round(cityLongitude * 100.0) / 100.0;
+            if(isW){
+                cityLongitude = - Math.round(cityLongitude * 100.0) / 100.0;
+            }else{
+                cityLongitude = Math.round(cityLongitude * 100.0) / 100.0;
+            }
+
 
             citiesLocationMap.put(cityName, cityLatitude + "," + cityLongitude);
         }

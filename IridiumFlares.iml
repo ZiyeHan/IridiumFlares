@@ -28,7 +28,7 @@
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-safari-driver:3.3.1" level="project" />
     <orderEntry type="library" name="Maven: com.codeborne:phantomjsdriver:1.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.seleniumhq.selenium:htmlunit-driver:2.24" level="project" />
-    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-support:3.10.0" level="project" />
+    <orderEntry type="library" name="Maven: org.seleniumhq.selenium:selenium-support:3.11.0" level="project" />
     <orderEntry type="library" name="Maven: net.bytebuddy:byte-buddy:1.7.9" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.10" level="project" />
     <orderEntry type="library" name="Maven: commons-logging:commons-logging:1.2" level="project" />

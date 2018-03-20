@@ -80,8 +80,8 @@
                     trigger: 'item',
                     formatter: function(params) {
                         return "City" + ' : ' + params.data.name +
-                            '<br/>' + "Local date: " + params.data.value[2][0].date +
-                            '<br/>' + "Local time: " + params.data.value[2][0].time +
+                            '<br/>' + "Local Date: " + params.data.value[2][0].date +
+                            '<br/>' + "Exact Local Time: " + params.data.value[2][0].time +
                             '<br/>' + "Brightness: " + params.data.value[2][0].brightness +
                             '<br/>' + "Satellite Name: " + params.data.value[2][0].satellite +
                             '<br/>' + "Azimuth: " + params.data.value[2][0].azimuth;
@@ -247,6 +247,9 @@
                     type: 'effectScatter',
                     coordinateSystem: 'geo',
                     data: generateMapData(blinkingDataObjects),
+                    symbolSize: function (val){ 
+                        return 7 - val[2][0].brightness;  //The brigher the bigger
+                    },
                     showEffectOn: 'render',
                     hoverAnimation: true,
                     itemStyle: {
@@ -263,8 +266,7 @@
                 option.dataZoom[0].end = params.end;
                 option.dataZoom[1].start = params.start;
                 option.dataZoom[1].end = params.end;
-                
-                         
+                                         
                 myChart.setOption(option, true);
             }
 
