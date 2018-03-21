@@ -3,35 +3,109 @@
 
 <head>
     <meta charset="utf-8">
-</head>
-
-<body style="height: 100%; margin: 0">
-    <div id="container" style="height: 100%"></div>
     <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/echarts.min.js"></script>
     <script type="text/javascript" src="http://echarts.baidu.com/gallery/vendors/echarts/map/js/world.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/0.8.9/jquery.csv.js"></script>
+    <link rel="stylesheet" href="css/normalize.css">
+    <link rel="stylesheet" href="css/style.css" media="screen" type="text/css" />
+    <style>
+        .tool {
+            float: left
+        }
+    </style>
+</head>
+
+<body style="height: 100%; margin: 0">
+    <div class="tool" id="tool" style="padding: 0; position: fixed; top:0; width:100%; z-index: 1000">
+        <div class="wrapper">
+            Map of Iridium Flares
+            <div id ='a' class="tooltip" style="margin: 0; width:98%">
+                <p>Satellite flare, also known as satellite glint, is the visible phenomenon caused by the reflective surfaces of passing satellites (such as antennas, SAR or solar panels), reflecting sunlight toward the Earth below and appearing as a brief, bright "flare".The Iridium constellation with 66 active telecommunication satellites in low Earth orbit are known to cause the brightest flares of all orbiting satellites.<br><br>While satellite flare may be seen by chance, we want to build a website (maybe a mobile app in the future) which provides location specific information as to when and where in the sky a satellite flare may be seen (for controlled satellites), or trajectory of a tumbling satellite's pass (for uncontrolled satellites) in the sky.<br><br>We want everyone on earth can enjoy the pleasure of exploring the sky and experience the magnificient astronomical phenomena!</p>
+            </div>
+        </div>
+    </div>
+    
+    <div id="container" style="height: 100%"></div>
+    
+    <div class="tool" id="tool" style="width:25%">
+        <div class="wrapper">
+            Files Submitted
+            <div class="tooltip">
+                <br> style.css
+                <br> normalize.css
+                <br> flares.html
+                <br> iridiumFlaresInfo.csv
+                <br>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tool" id="tool" style="width:25%">
+        <div class="wrapper">
+            Data Sources
+            <div class="tooltip">
+                <a href="http://www.heavens-above.com" style="color: azure">Heavens-Above</a>
+                <br> <a href="https://www.infoplease.com/world/united-states-geography/latitude-and-longitude-us-and-canadian-cities" style="color: azure">Cities Data for US and Canada</a>
+                <br> <a href="https://www.infoplease.com/world/world-geography/major-cities-latitude-longitude-and-corresponding-time-zones" style="color: azure">Cities Data for Other Countries</a>
+            </div>
+        </div>
+    </div>    
+    
+    <div class="tool" id="tool" style="width:25%">
+        <div class="wrapper">
+            Relevant Visualization Sources
+            <div class="tooltip">
+                <a href="http://echarts.baidu.com/" style="color: azure">ECharts</a>
+                <br> <a href=" http://dygraphs.com/" style="color: azure">Dygraphs</a>
+                <br> <a href="https://d3js.org/" style="color: azure">Data Driven Documents</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tool" id="tool" style="width:25%">
+        <div class="wrapper">
+            Code Sources
+            <div class="tooltip">
+                <a href="http://echarts.baidu.com/examples/editor.html?c=map-parallel-prices" style="color: azure">Map Code Source</a>
+                <br>
+                <a href="http://www.echartsjs.com/gallery/editor.html?c=line-draggable" style="color: azure">Slider Code Source</a>
+                <br>
+                <a href="http://www.html5tricks.com/tag/tooltip" style="color: azure">Tooltip Code Source</a>
+            </div>
+        </div>
+    </div>
+    
+    <div style="margin-left: 30%;">
+        <p style="text-align: left">
+            Created by:  Ziye Han, Weicai Lin,and Wenting Zhu
+            <br> Email:  zhan12@ucsc.edu, wlin12@ucsc.edu, wzhu21@ucsc.edu
+            <br> Instructor:  Suresh Lodha
+            <br> Designed for:  CMPS 263 Winter 2018
+            <br><br>
+        </p>
+    </div>
 
     <script type="text/javascript">
         //Vriables declaration
         var dom = document.getElementById("container");
         var myChart = echarts.init(dom);
-        
         option = null;
-        var base = +new Date(2018, 2, 21); //Better start from 0h
+        var today = new Date();
+        var base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         var oneHour = 3600 * 100;
         var date = [];
         var dayNightLineData = [1];
         var now = new Date(base);
         for (var i = 0; i <= 7 * 240; i++) {
             date.push([now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/') + " " + [now.getHours(), now.getMinutes()].join(':'));
-            dayNightLineData.push(1 + 0.95 * Math.sin((i + 1) * Math.PI / 120));
+            dayNightLineData.push(1 + 0.95 * Math.sin(Math.PI / 2 + (i + 1) * Math.PI / 120));
             var now = new Date(base += oneHour);
         }
 
         jQuery.get("iridiumFlaresInfo.csv", function(data) {
             var dataObjects = $.csv.toObjects(data);
-            
+
             //Transfer data to map data (all data processing is here)
             function generateMapData(dataObjects) {
                 var mapData = [];
@@ -56,7 +130,7 @@
                 }
                 return mapData;
             };
-            
+
             option = {
                 //Background Color
                 backgroundColor: new echarts.graphic.RadialGradient(0.5, 0.5, 0.4, [{
@@ -71,9 +145,24 @@
                     top: 10,
                     itemGap: 10,
                     textStyle: {
+                        font: 60,
                         color: '#eee'
                     }
                 },
+                
+                toolbox: {
+					show: true,
+					itemSize: 23,
+					right: 20,
+					top: 5,
+					showTitle: false,
+					iconStyle: {
+						borderWidth: 3,
+					},
+					feature: {
+						saveAsImage: {}
+					}
+				},
 
                 //Design the tooltip content
                 tooltip: {
@@ -85,14 +174,14 @@
                             '<br/>' + "Country: " + params.data.value[2][0].country +
                             '<br/>' + "Local Date: " + params.data.value[2][0].date +
                             '<br/>' + "Exact Local Time: " + params.data.value[2][0].time +
-                            '<br/>' + "Brightness: " + brightness + "  " + generateBrightnessLevel(brightness) + 
-                            '<br/>' + generateBrightnessGraph(brightness) + 
+                            '<br/>' + "Brightness: " + brightness + "  " + generateBrightnessLevel(brightness) +
+                            '<br/>' + generateBrightnessGraph(brightness) +
                             '<br/>' + "Satellite Name: " + params.data.value[2][0].satellite +
                             '<br/>' + "Azimuth: " + azimuth +
                             generateAzimuthGraph(azimuth);
                     }
                 },
-                
+
                 //The world map
                 geo: {
                     map: 'world',
@@ -110,12 +199,19 @@
                             borderColor: '#000'
                         }
                     },
-                    left: '7%',
+                    left: '5%',
                     top: '10%',
                     bottom: '15%',
-                    right: '7%',
+                    right: '5%',
                     roam: false
                 },
+                
+                grid: {
+					left: '4%',
+					top: '10%',
+					bottom: '9%',
+					right: '4%',
+				},
 
                 //Show dates at the bottom above the slider bar
                 xAxis: {
@@ -141,21 +237,46 @@
                 //Design the "slider bar" at the bottom
                 dataZoom: [{
                     type: 'slider', //The length of the bar is one-day
-                    minSpan: 100 / 21,
-                    maxSpan: 100 / 21,
+                    minSpan: 100 / 7,
+                    maxSpan: 100 / 7,
                     start: 0,
-                    end: 100 / 21
+                    end: 100 / 7
                 }, {
                     start: 0,
-                    end: 100 / 7,
-                    handleSize: '80%',
-                    handleStyle: {
-                        color: '#fff',
-                        shadowBlur: 3,
-                        shadowColor: '#fff',
-                        shadowOffsetX: 2,
-                        shadowOffsetY: 2
-                    }
+					end: 100 / 7,
+					fillerColor: {
+						type: 'linear',
+						x: 0,
+						x2: 1,
+						x3: 2,
+						colorStops: [{
+							offset: 0,
+							color: '#3f3f3f' // 0% 处的颜色
+						}, {
+							offset: 0.415,
+							color: '#3f3f3f'
+						}, {
+							offset: 0.42,
+							color: 'rgba(255, 255, 255, 0.8)'
+						}, {
+							offset: 0.58,
+							color: 'rgba(255, 255, 255, 0.8)'
+						}, {
+							offset: 0.585,
+							color: '#3f3f3f'
+						}, {
+							offset: 1,
+							color: '#3f3f3f'
+						}],
+					},
+					handleSize: '80%',
+					handleStyle: {
+						color: '#fff',
+						shadowBlur: 3,
+						shadowColor: 'rgba(0, 0, 0, 0.6)',
+						shadowOffsetX: 2,
+						shadowOffsetY: 2
+					}
                 }],
 
                 //Scatter Points and Day-Night Line
@@ -216,8 +337,6 @@
             if (option && typeof option === "object") {
                 myChart.setOption(option, true);
             }
-            
-            generateBrightnessGraph();
 
             //Rerender 
             myChart.on('dataZoom', function(params) {
@@ -225,28 +344,32 @@
             });
 
             function reRender(params) {
-                var startSecond = Date.parse('21 Mar 2018 00:00:00 GMT') / 1000; //GMT
-                var totalSeconds = 7 * 24 * 60 * 60;
-                var beginSecondsStr = (params.start / 100 * totalSeconds + startSecond) + ""; //GMT
-                var beginSeconds = beginSecondsStr.substring(0, beginSecondsStr.indexOf("."));
-                var endSecondsStr = (params.end / 100 * totalSeconds + startSecond) + ""; //GMT
-                var endSeconds = endSecondsStr.substring(0, endSecondsStr.indexOf("."));
-                var blinkingDataObjects = []; 
-                for (var i = 0; i < dataObjects.length; i++) {
-                    var flareDate = dataObjects[i].date;
-                    var flareTime = dataObjects[i].time;
-                    var flareDateDay = flareDate.substring(flareDate.indexOf(" ") + 1, flareDate.length);
-                    var flareDateMonth = flareDate.substring(0, flareDate.indexOf(" "));
-                    var flareTimesString = flareDateDay + " " + flareDateMonth + " 2018 " +
-                        flareTime + " GMT";
-                    var flareTimeSecond = Date.parse(flareTimesString) / 1000; //GMT
-                    if ((flareTimeSecond > beginSeconds) && (flareTimeSecond < endSeconds)) {
-                        blinkingDataObjects.push(dataObjects[i]);
-                    }
+                var gmtZero = today.getDate() + ' ' + getCurrentMonthInEnglish(today.getMonth()) + ' '
+                + today.getFullYear() + ' 00:00:00 GMT';
+                var startSecond = Date.parse(gmtZero) / 1000; //GMT
+				var totalSeconds = 7 * 24 * 60 * 60;
+				var st = params.start * 7 / 12 + params.end * 5 / 12;
+				var en = params.start * 5 / 12 + params.end * 7 / 12;
+				var beginSecondsStr = (st / 100 * totalSeconds + startSecond) + ""; //GMT
+				var beginSeconds = beginSecondsStr.substring(0, beginSecondsStr.indexOf("."));
+				var endSecondsStr = (en / 100 * totalSeconds + startSecond) + ""; //GMT
+				var endSeconds = endSecondsStr.substring(0, endSecondsStr.indexOf("."));
+				var blinkingDataObjects = [];
+				for (var i = 0; i < dataObjects.length; i++) {
+					var flareDate = dataObjects[i].date;
+					var flareTime = dataObjects[i].time;
+					var flareDateDay = flareDate.substring(flareDate.indexOf(" ") + 1, flareDate.length);
+					var flareDateMonth = flareDate.substring(0, flareDate.indexOf(" "));
+					var flareTimesString = flareDateDay + " " + flareDateMonth + " 2018 " +
+						flareTime + " GMT";
+					var flareTimeSecond = Date.parse(flareTimesString) / 1000; //GMT
+					if ((flareTimeSecond > beginSeconds) && (flareTimeSecond < endSeconds)) {
+						blinkingDataObjects.push(dataObjects[i]);
+					}
                 }
-                
+
                 //Option is global
-                if(option.series.length > 2){
+                if (option.series.length > 2) {
                     option.series.pop(); //Pop the last effectScatter
                 }
                 option.series.push({
@@ -254,8 +377,8 @@
                     type: 'effectScatter',
                     coordinateSystem: 'geo',
                     data: generateMapData(blinkingDataObjects),
-                    symbolSize: function (val){ 
-                        return 7 - val[2][0].brightness;  //The brigher the bigger
+                    symbolSize: function(val) {
+                        return 7 - val[2][0].brightness; //The brigher the bigger
                     },
                     showEffectOn: 'render',
                     hoverAnimation: true,
@@ -268,37 +391,53 @@
                     },
                     zlevel: 1
                 });
-                
+
                 option.dataZoom[0].start = params.start;
                 option.dataZoom[0].end = params.end;
                 option.dataZoom[1].start = params.start;
                 option.dataZoom[1].end = params.end;
-                                         
+
                 myChart.setOption(option, true);
             }
-            
-            function generateAzimuthGraph(azimuth){
+
+            function generateAzimuthGraph(azimuth) {
                 return '<br/><div style="height: 90px; width: 180px;"><svg><circle cx="75" cy="50" r="30" stroke="white" stroke-width="2"/><line x1="75" y1="50" x2="105" y2="80" transform="rotate(' + (parseInt(azimuth.substring(0, azimuth.indexOf('°'))) - 135) + ' 75 50)" style="stroke:rgb(255,0,0);stroke-width:3"/></svg></div>';
-            } 
-            
-            function generateBrightnessLevel(brightness){
-                if(brightness - 7 < -13){
-                   return "(High)";
-                }else if(brightness - 7 < -10){
-                   return "(Medium)";
-                }else{
-                   return "(Low)";
+            }
+
+            function generateBrightnessLevel(brightness) {
+                if (brightness - 7 < -13) {
+                    return "(High)";
+                } else if (brightness - 7 < -10) {
+                    return "(Medium)";
+                } else {
+                    return "(Low)";
                 }
                 return "";
             }
-            
-            function generateBrightnessGraph(brightness){
+
+            function generateBrightnessGraph(brightness) {
                 var percent = (brightness - 7.00 + 17.00) / 11.00;
-                var xPosition = 12.00 + percent * (150.00 - 12.00);      
-                return '<svg width="150" height="20"><linearGradient id="Gradient1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient><style type="text/css"><![CDATA[#rect1 { fill: url(#Gradient1); }.stop1 { stop-color: yellow; }.stop2 { stop-color: gray;}]]></style><rect id="rect1" x="10" y="10" width="150" height="20"/><line x1="' + xPosition + '" y1="20" x2="' + xPosition + '" y2="0" style="stroke:rgb(0,0,0);stroke-width:5"/></svg>';      
+                var xPosition = 12.00 + percent * (150.00 - 12.00);
+                return '<svg width="150" height="20"><linearGradient id="Gradient1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient><style type="text/css"><![CDATA[#rect1 { fill: url(#Gradient1); }.stop1 { stop-color: yellow; }.stop2 { stop-color: gray;}]]></style><rect id="rect1" x="10" y="10" width="150" height="20"/><line x1="' + xPosition + '" y1="20" x2="' + xPosition + '" y2="0" style="stroke:rgb(0,0,0);stroke-width:5"/></svg>';
             }
             
-
+            function getCurrentMonthInEnglish(index){
+                var months = new Array(12);
+                months[0] = "January";
+                months[1] = "February";
+                months[2] = "March";
+                months[3] = "April";
+                months[4] = "May";
+                months[5] = "June";
+                months[6] = "July";
+                months[7] = "August";
+                months[8] = "September";
+                months[9] = "October";
+                months[10] = "November";
+                months[11] = "December";
+                return months[index];
+            }
+            
         });
 
     </script>
