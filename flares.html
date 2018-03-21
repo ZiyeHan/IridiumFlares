@@ -18,7 +18,7 @@
         var myChart = echarts.init(dom);
         
         option = null;
-        var base = +new Date(2018, 2, 6); //Better start from 0h
+        var base = +new Date(2018, 2, 21); //Better start from 0h
         var oneHour = 3600 * 100;
         var date = [];
         var dayNightLineData = [1];
@@ -79,16 +79,20 @@
                 tooltip: {
                     trigger: 'item',
                     formatter: function(params) {
+                        var azimuth = params.data.value[2][0].azimuth;
+                        var brightness = params.data.value[2][0].brightness;
                         return "City" + ' : ' + params.data.name +
                             '<br/>' + "Country: " + params.data.value[2][0].country +
                             '<br/>' + "Local Date: " + params.data.value[2][0].date +
                             '<br/>' + "Exact Local Time: " + params.data.value[2][0].time +
-                            '<br/>' + "Brightness: " + params.data.value[2][0].brightness +
+                            '<br/>' + "Brightness: " + brightness + "  " + generateBrightnessLevel(brightness) + 
+                            '<br/>' + generateBrightnessGraph(brightness) + 
                             '<br/>' + "Satellite Name: " + params.data.value[2][0].satellite +
-                            '<br/>' + "Azimuth: " + params.data.value[2][0].azimuth;
+                            '<br/>' + "Azimuth: " + azimuth +
+                            generateAzimuthGraph(azimuth);
                     }
                 },
-
+                
                 //The world map
                 geo: {
                     map: 'world',
@@ -212,6 +216,8 @@
             if (option && typeof option === "object") {
                 myChart.setOption(option, true);
             }
+            
+            generateBrightnessGraph();
 
             //Rerender 
             myChart.on('dataZoom', function(params) {
@@ -219,7 +225,7 @@
             });
 
             function reRender(params) {
-                var startSecond = Date.parse('06 Mar 2018 00:00:00 GMT') / 1000; //GMT
+                var startSecond = Date.parse('21 Mar 2018 00:00:00 GMT') / 1000; //GMT
                 var totalSeconds = 7 * 24 * 60 * 60;
                 var beginSecondsStr = (params.start / 100 * totalSeconds + startSecond) + ""; //GMT
                 var beginSeconds = beginSecondsStr.substring(0, beginSecondsStr.indexOf("."));
@@ -270,6 +276,28 @@
                                          
                 myChart.setOption(option, true);
             }
+            
+            function generateAzimuthGraph(azimuth){
+                return '<br/><div style="height: 90px; width: 180px;"><svg><circle cx="75" cy="50" r="30" stroke="white" stroke-width="2"/><line x1="75" y1="50" x2="105" y2="80" transform="rotate(' + (parseInt(azimuth.substring(0, azimuth.indexOf('°'))) - 135) + ' 75 50)" style="stroke:rgb(255,0,0);stroke-width:3"/></svg></div>';
+            } 
+            
+            function generateBrightnessLevel(brightness){
+                if(brightness - 7 < -13){
+                   return "(High)";
+                }else if(brightness - 7 < -10){
+                   return "(Medium)";
+                }else{
+                   return "(Low)";
+                }
+                return "";
+            }
+            
+            function generateBrightnessGraph(brightness){
+                var percent = (brightness - 7.00 + 17.00) / 11.00;
+                var xPosition = 12.00 + percent * (150.00 - 12.00);      
+                return '<svg width="150" height="20"><linearGradient id="Gradient1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient><style type="text/css"><![CDATA[#rect1 { fill: url(#Gradient1); }.stop1 { stop-color: yellow; }.stop2 { stop-color: gray;}]]></style><rect id="rect1" x="10" y="10" width="150" height="20"/><line x1="' + xPosition + '" y1="20" x2="' + xPosition + '" y2="0" style="stroke:rgb(0,0,0);stroke-width:5"/></svg>';      
+            }
+            
 
         });
 
