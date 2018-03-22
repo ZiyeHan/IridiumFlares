@@ -93,7 +93,7 @@
         var myChart = echarts.init(dom);
         option = null;
         var today = new Date();
-        var base = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        var base = +new Date(today.getFullYear(), today.getMonth(), today.getDate());
         var oneHour = 3600 * 100;
         var date = [];
         var dayNightLineData = [1];
@@ -356,10 +356,9 @@
             });
 
             function reRender(params) {
-                var gmtZero = today.getDate() + ' ' + getCurrentMonthInEnglish(today.getMonth()) + ' '
-                + today.getFullYear() + ' 00:00:00 GMT';
+                var gmtZero = today.getDate() + ' ' + getCurrentMonthInEnglish(today.getMonth()) + ' ' + today.getFullYear() + ' 00:00:00 GMT';
                 var startSecond = Date.parse(gmtZero) / 1000; //GMT
-				var totalSeconds = 7 * 24 * 60 * 60;
+                var totalSeconds = 7 * 24 * 60 * 60;
 				var st = params.start * 7 / 12 + params.end * 5 / 12;
 				var en = params.start * 5 / 12 + params.end * 7 / 12;
 				var beginSecondsStr = (st / 100 * totalSeconds + startSecond) + ""; //GMT
