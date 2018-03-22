@@ -56,17 +56,6 @@
         <div class="wrapper">
             Relevant Visualization Sources
             <div class="tooltip">
-                <a href="http://echarts.baidu.com/" style="color: azure">ECharts</a>
-                <br> <a href=" http://dygraphs.com/" style="color: azure">Dygraphs</a>
-                <br> <a href="https://d3js.org/" style="color: azure">Data Driven Documents</a>
-            </div>
-        </div>
-    </div>
-    
-    <div class="tool" id="tool" style="width:25%">
-        <div class="wrapper">
-            Code Sources
-            <div class="tooltip">
                 <a href="http://echarts.baidu.com/examples/editor.html?c=map-parallel-prices" style="color: azure">Map Code Source</a>
                 <br>
                 <a href="http://www.echartsjs.com/gallery/editor.html?c=line-draggable" style="color: azure">Slider Code Source</a>
@@ -75,9 +64,21 @@
             </div>
         </div>
     </div>
-    
-    <div style="margin-left: 30%;">
-        <p style="text-align: left">
+
+    <div class="tool" id="tool" style="width:25%">
+        <div class="wrapper">
+            Code Sources
+            <div class="tooltip">
+                <a href="https://github.com/ZiyeHan/IridiumFlares" style="color: azure">Github Code Source</a>
+            </div>
+        </div>
+    </div>
+
+    <br>
+
+    <div >
+        <p style="text-align: center;">
+            <br>
             Created by:  Ziye Han, Weicai Lin,and Wenting Zhu
             <br> Email:  zhan12@ucsc.edu, wlin12@ucsc.edu, wzhu21@ucsc.edu
             <br> Instructor:  Suresh Lodha
@@ -151,18 +152,20 @@
                 },
                 
                 toolbox: {
-					show: true,
-					itemSize: 23,
-					right: 20,
-					top: 5,
-					showTitle: false,
-					iconStyle: {
-						borderWidth: 3,
-					},
-					feature: {
-						saveAsImage: {}
-					}
-				},
+                    show: true,
+                    itemSize: 23,
+                    right: 20,
+                    top: 55,
+                    showTitle: false,
+                    iconStyle: {
+                        borderWidth: 3,
+                        borderColor:"#fff",
+
+                    },
+                    feature: {
+                        saveAsImage: {},
+                    }
+                },
 
                 //Design the tooltip content
                 tooltip: {
@@ -188,6 +191,9 @@
                     silent: false,
                     label: {
                         emphasis: {
+                            textStyle: {
+                                color: "#1496bb"
+                            },
                             show: true,
                             areaColor: '#000'
                         }
@@ -196,13 +202,19 @@
                         normal: {
                             borderWidth: 0.2,
                             areaColor: '#bfbfbf',
-                            borderColor: '#000'
+                            borderColor: '#000',
+                            textColor: "#fff"
+                        },
+                        emphasis: {
+                            show: true,
+                            areaColor: "#fff",
+                            borderColor: "#000",
                         }
                     },
-                    left: '5%',
+                    left: '7%',
                     top: '10%',
                     bottom: '15%',
-                    right: '5%',
+                    right: '7%',
                     roam: false
                 },
                 
@@ -302,7 +314,7 @@
                         itemStyle: {
                             normal: {
                                 borderColor: '#21160b',
-                                color: '#271660',
+                                color: '#3f3f3f',
                             }
                         }
                     },
@@ -418,7 +430,7 @@
             function generateBrightnessGraph(brightness) {
                 var percent = (brightness - 7.00 + 17.00) / 11.00;
                 var xPosition = 12.00 + percent * (150.00 - 12.00);
-                return '<svg width="150" height="20"><linearGradient id="Gradient1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient><style type="text/css"><![CDATA[#rect1 { fill: url(#Gradient1); }.stop1 { stop-color: yellow; }.stop2 { stop-color: gray;}]]></style><rect id="rect1" x="10" y="10" width="150" height="20"/><line x1="' + xPosition + '" y1="20" x2="' + xPosition + '" y2="0" style="stroke:rgb(0,0,0);stroke-width:5"/></svg>';
+                return '<svg width="150" height="20"><linearGradient id="Gradient1"><stop class="stop1" offset="0%"/><stop class="stop2" offset="100%"/></linearGradient><style type="text/css"><![CDATA[#rect1 { fill: url(#Gradient1); }.stop1 { stop-color: yellow; }.stop2 { stop-color: gray;}]]></style><rect id="rect1" x="10" y="10" width="150" height="20"/><line x1="' + xPosition + '" y1="20" x2="' + xPosition + '" y2="0" style="stroke:rgb(255,0,0);stroke-width:5"/></svg>';
             }
             
             function getCurrentMonthInEnglish(index){
